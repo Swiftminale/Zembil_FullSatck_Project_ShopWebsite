@@ -5,6 +5,10 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+
+
+
+// POST /api/users/wishlist
 export const POST = async (req: NextRequest) => {
   try {
     const { userId } = auth();

@@ -1,28 +1,36 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 
-const Gallery = ({ productMedia }: { productMedia: string[] }) => {
-  const [mainImage, setMainImage] = useState(productMedia[0]);
+type ProductType = {
+  _id: string;
+  media: string[];
+  title: string;
+  category: string;
+};
+
+const Gallery = ({ product }: { product: ProductType }) => {
+  const [mainImage, setMainImage] = useState(product.media[0]);
 
   return (
-    <div className="flex flex-col gap-3 max-w-[500px">
+    <div className="flex flex-col gap-3 max-w-[500px]">
       <Image
         src={mainImage}
-        width={500}
-        height={500}
         alt="product"
-        className="w-96 h-96 rounded-lg shadow-xl object-cover"
+        width={250}
+        height={300}
+        className="h-[250px] rounded-lg object-cover"
       />
       <div className="flex gap-2 overflow-auto tailwind-scrollbar-hide">
-        {productMedia.map((image, index) => (
+        {product.media.map((image, index) => (
           <Image
             key={index}
             src={image}
-            height={200}
-            width={200}
-            alt="product"
+            height={100}
+            width={100}
+            alt={`Thumbnail of ${product.title}`}
             className={`w-20 h-20 rounded-lg object-cover cursor-pointer ${
               mainImage === image ? "border-2 border-black" : ""
             }`}
@@ -30,6 +38,12 @@ const Gallery = ({ productMedia }: { productMedia: string[] }) => {
           />
         ))}
       </div>
+      <Link href={`/products/${product._id}`} className="flex flex-col gap-2">
+        <div>
+          <p className="text-base font-bold">{product.title}</p>
+          <p className="text-sm text-gray-500">{product.category}</p>
+        </div>
+      </Link>
     </div>
   );
 };

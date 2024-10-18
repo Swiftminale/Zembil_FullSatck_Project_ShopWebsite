@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
   const router = useRouter();
@@ -13,17 +13,39 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const [loading, setLoading] = useState(false);
   const [signedInUser, setSignedInUser] = useState<UserType | null>(null);
   const [isLiked, setIsLiked] = useState(false);
-
   const getUser = async () => {
     try {
       setLoading(true);
       const res = await fetch("/api/users");
       const data = await res.json();
       setSignedInUser(data);
-      setIsLiked(data.wisjlist.includes(product._id));
+      setIsLiked(data.wishlist.includes(product._id));
       setLoading(false);
     } catch (err) {
       console.log("[user_GET", err);
+    }
+  };
+
+  const handleLike = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    try {
+      if (!user) {
+        router.push("/sign-in");
+        return;
+      } else {
+        setLoading(true);
+        const res = await fetch("/api/user/wishlist", {
+          method: "POST",
+          body: JSON.stringify({ productId: product._id }),
+        });
+        const updatedUser = await res.json();
+        setSignedInUser(updatedUser);
+        setIsLiked(updatedUser.wishlist.includes(product._id));
+      }
+    } catch (err) {
+      console.log("[wishlist_POST]", err);
     }
   };
 
@@ -33,48 +55,26 @@ const ProductCard = ({ product }: { product: ProductType }) => {
     }
   }, [user]);
 
-  const handleLike = async (
-    e: React.MouseEvent<HTMLBodyElement, MouseEvent>
-  ) => {
-    e.preventDefault();
-
-    try {
-      if (!user) {
-        router.push("/sign-in");
-        return;
-      }else{
-      setLoading(true);
-      const res = await fetch("/api/users/wishlist", {
-        method: "POST",
-        body: JSON.stringify({ productId: product._id }),
-      });
-      const updatedUser = await res.json();
-      setSignedInUser(updatedUser);
-      setIsLiked(updatedUser.wishlist.includes(product._id));}
-    } catch (err) {
-      console.log("[wichlist_POST]", err);
-    }
-  };
   return (
     <Link
       href={`/products/${product._id}`}
-      className="w-[220px] flex flex-col gap-2"
+      className="w-[200xp] flex flex-col gap-2"
     >
       <Image
         src={product.media[0]}
         alt="product"
         width={250}
-        height={200}
+        height={300}
         className="h-[250px] rounded-lg object-cover"
       />
       <div>
-        <p className="text-base-bold mt-5">{product.title}</p>
+        <p className="text-base-bold">{product.title}</p>
         <p className="text-small-medium text-grey-2">{product.category}</p>
       </div>
       <div className="flex justify-between items-center">
-        <p className="text-body-bold">Br {product.price}</p>
+        <p className="text-body-bold">$ {product.price}</p>
         <button onClick={handleLike}>
-          <Heart fill={`${isLiked ? "red" : "white"}`} />
+          <Heart fill={`${isLiked ? "red" : " white"}`} />
         </button>
       </div>
     </Link>

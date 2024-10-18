@@ -4,6 +4,10 @@ import { auth } from "@clerk/nextjs/server";
 
 import { NextRequest, NextResponse } from "next/server";
 
+
+
+
+// GET /api/users
 export const GET = async (req: NextRequest) => {
   try {
     const { userId } = auth();
