@@ -13,6 +13,8 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   const [loading, setLoading] = useState(false);
   const [signedInUser, setSignedInUser] = useState<UserType | null>(null);
   const [isLiked, setIsLiked] = useState(false);
+
+
   const getUser = async () => {
     try {
       setLoading(true);
@@ -27,7 +29,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   };
 
   const handleLike = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent> // to prevent default behavior so it doesn't goto details page
   ) => {
     e.preventDefault();
     try {
@@ -36,7 +38,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
         return;
       } else {
         setLoading(true);
-        const res = await fetch("/api/user/wishlist", {
+        const res = await fetch("/api/users/wishlist", {
           method: "POST",
           body: JSON.stringify({ productId: product._id }),
         });

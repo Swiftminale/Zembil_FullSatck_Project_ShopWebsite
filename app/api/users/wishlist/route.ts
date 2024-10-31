@@ -14,7 +14,7 @@ export const POST = async (req: NextRequest) => {
     const { userId } = auth();
 
     if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return new NextResponse("Unauthorized", { status: 401 }); // Unauthorized
     }
 
     await connectToDB();
@@ -22,13 +22,13 @@ export const POST = async (req: NextRequest) => {
     const user = await User.findOne({ clerkId: userId });
 
     if (!user) {
-      return new NextResponse("User not found", { status: 404 });
+      return new NextResponse("User not found", { status: 404 }); // Not Found
     }
 
     const { productId } = await req.json();
 
     if (!productId) {
-      return new NextResponse("Product Id required", { status: 400 });
+      return new NextResponse("Product Id required", { status: 400 }); // Bad Request
     }
 
     const isLiked = user.wishlist.includes(productId);
