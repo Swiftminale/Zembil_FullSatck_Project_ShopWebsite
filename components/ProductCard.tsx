@@ -6,14 +6,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const ProductCard = ({ product }: { product: ProductType }) => {
+interface ProductCardProps {
+  product: ProductType;
+  updateSignedInUser: (updatedUser: UserType) => void; // Add this line
+}
+
+const ProductCard = ({ product, updateSignedInUser }: ProductCardProps) => {
   const router = useRouter();
   const { user } = useUser();
 
   const [loading, setLoading] = useState(false);
   const [signedInUser, setSignedInUser] = useState<UserType | null>(null);
   const [isLiked, setIsLiked] = useState(false);
-
 
   const getUser = async () => {
     try {
@@ -24,12 +28,12 @@ const ProductCard = ({ product }: { product: ProductType }) => {
       setIsLiked(data.wishlist.includes(product._id));
       setLoading(false);
     } catch (err) {
-      console.log("[user_GET", err);
+      console.log("[user_GET]", err);
     }
   };
 
   const handleLike = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent> // to prevent default behavior so it doesn't goto details page
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     try {
@@ -43,7 +47,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
           body: JSON.stringify({ productId: product._id }),
         });
         const updatedUser = await res.json();
-        setSignedInUser(updatedUser);
+        updateSignedInUser(updatedUser); // Call updateSignedInUser here
         setIsLiked(updatedUser.wishlist.includes(product._id));
       }
     } catch (err) {
@@ -58,10 +62,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
   }, [user]);
 
   return (
-    <Link
-      href={`/products/${product._id}`}
-      className="w-[200xp] flex flex-col gap-2"
-    >
+    <Link href="/products" className="w-[200px] flex flex-col gap-2">
       <Image
         src={product.media[0]}
         alt="product"
@@ -76,7 +77,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
       <div className="flex justify-between items-center">
         <p className="text-body-bold">$ {product.price}</p>
         <button onClick={handleLike}>
-          <Heart fill={`${isLiked ? "red" : " white"}`} />
+          <Heart fill={`${isLiked ? "red" : "white"}`} />
         </button>
       </div>
     </Link>
